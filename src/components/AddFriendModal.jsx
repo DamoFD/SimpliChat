@@ -1,15 +1,33 @@
-import { Dialog, DialogContent } from '@mui/material'
+import { Autocomplete, Dialog, DialogContent, TextField } from '@mui/material'
 import CloseIcon from "@mui/icons-material/Close"
-import TextField from './TextField'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
+import GetAll from '../utils/GetAll';
 
 function AddFriendModal({ open, handleClose }) {
+    const [error, setError] = useState(false);
+    const [username, setUsername] = useState("");
+    const [user, setUser] = useState(null);
+    const [autocompleteOptions, setAutocomopleteOptions] = useState([]);
     const closeModal = useCallback(
         () => {
             setError("");
             handleClose();
         }, [handleClose],
     )
+
+    useEffect(() => {
+        const fetchAllData = async () => {
+            const allUsers = await GetAll.fetchAllUsers();
+
+            setAutocomopleteOptions([...allUsers]);
+        }
+
+        fetchAllData();
+    }, [])
+
+    const handleUsernameChange = (event, newValue) => {
+        setUsername(newValue);
+    }
 
   return (
     <>
@@ -29,15 +47,24 @@ function AddFriendModal({ open, handleClose }) {
                 </div>
                 <CloseIcon onClick={ closeModal } className="cursor-pointer text-white" />
                 </div>
-                <form className="flex flex-col">
-                <TextField
-              placeholder="Enter Friend's Username"
-              name="friendName"
-            />
+                <div className="flex flex-col">
+                <Autocomplete
+                    freeSolo
+                    options={autocompleteOptions}
+                    getOptionLabel={(option) => option.displayName}
+                    onChange={handleUsernameChange}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label='Add a Friend'
+                            variant='outlined'
+                        />
+                    )}
+                />
             <button className='text-white bg-purple-600' type="submit">
-              Submit
+              Add Friend
             </button>
-                </form>
+                </div>
             </DialogContent>
         </Dialog>
     </>

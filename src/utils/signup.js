@@ -18,6 +18,8 @@ const register = async ({ email, password, displayName }) => {
       uid: user.uid,
     });
 
+    await setDoc(doc(db, "userChats", user.uid), {});
+
     return user;
   } catch (error) {
     console.error(error);
