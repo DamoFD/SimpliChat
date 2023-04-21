@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ChatIcon from "@mui/icons-material/Chat";
 import CircleIcon from "@mui/icons-material/Circle";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -6,10 +6,16 @@ import { Avatar } from "@mui/material";
 import AddFriendModal from "./AddFriendModal";
 import { Link } from "react-router-dom";
 import { AuthContext } from '../context/AuthContext';
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
+import { ChatContext } from "../context/ChatContext";
 
-function SideBar({ handleTabChange }) {
+function SideBar() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [chats, setChats] = useState([]);
+
   const { currentUser } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
 
   const handleModalOpen = () => {
     setModalOpen(true);
@@ -18,6 +24,24 @@ function SideBar({ handleTabChange }) {
   const handleModalClose = () => {
     setModalOpen(false);
   };
+
+  useEffect(() => {
+    const getChats = () => {
+    const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+      setChats(doc.data())
+    });
+
+    return () => {
+      unsub();
+    }
+  }
+
+    currentUser.uid && getChats();
+  }, [currentUser.uid])
+
+  const handleTabChange = (u) => {
+    dispatch({ type:'CHANGE_USER', payload: u })
+  }
 
   return (
     <>
@@ -54,12 +78,21 @@ function SideBar({ handleTabChange }) {
           </button>
         </div>
         <hr className="m-6 border-gray-600" />
+        {Object.entries(chats)?.sort((a,b) => b[1].date - a[1].date).map((chat) => (
         <div
           className="flex items-center border-2 border-b-4 border-gray-700 m-10 mb-0 mt-2 pt-2 pb-2 border-b-purple-600 cursor-pointer hover:bg-gray-600"
-          onClick={() => handleTabChange()}
+          onClick={() => handleTabChange(chat[1].userInfo)}
+          key={chat[0]}
         >
-          <Avatar className="ml-10" />
-          <p className="ml-2 text-xl">John Doe</p>
+          <Avatar
+            src={chat[1].userInfo.photoURL}
+            alt={chat[1].userInfo.displayName}
+            className="ml-10"
+          />
+          <div>
+          <p className="ml-2 text-xl">{chat[1].userInfo.displayName}</p>
+          <p>{chat[1].lastMessage?.text}</p>
+          </div>
           <div className="flex-grow" />
           <CircleIcon
             className="justify-self-end mr-4"
@@ -70,6 +103,7 @@ function SideBar({ handleTabChange }) {
             }}
           />
         </div>
+        ))}
       </div>
       <AddFriendModal open={modalOpen} handleClose={handleModalClose} />
     </>
