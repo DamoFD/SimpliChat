@@ -7,11 +7,15 @@ import { auth } from '../firebase';
 import UserActions from '../utils/UserActions';
 import { LinearProgress } from '@mui/material';
 import defaultProfPic from '../assets/defaultProfPic.jpg';
+import ChatActions from '../utils/ChatActions';
+import { useNavigate, Link } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Settings() {
   const [file, setFile] = useState('');
   const [percent, setPercent] = useState(0);
   const {currentUser} = useContext(AuthContext)
+  const navigate = useNavigate();
 
   function handleChange(event) {
     setFile(event.target.files[0]);
@@ -48,8 +52,17 @@ function Settings() {
             })
             .catch((error) => {
               console.log(error);
-            })
-        })
+            });
+
+            ChatActions.updateUserChatsPhotoURL(currentUser.uid, url)
+              .then(() => {
+                console.log("userChats photoURL updated successfully");
+                navigate('/')
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+        });
       }
     )
   }
@@ -57,6 +70,10 @@ function Settings() {
   return (
     <div className='pt-16 relative flex flex-col items-center'>
         <h1 className='text-white text-5xl'>Settings</h1>
+        <Link to={'/'}><ArrowBackIcon
+          className='text-white absolute top-16 left-2'
+          fontSize='large'
+        /></Link>
         <button
             className="bg-gray-900 w-20 h-12 rounded-lg text-white absolute top-16 right-2 text-lg"
             onClick={() => signOut(auth)}
@@ -73,6 +90,7 @@ function Settings() {
           variant="determinate"
           color='secondary'
           value={percent}
+          style={{ height: '10px', width: '50%' }}
         />
     </div>
   )

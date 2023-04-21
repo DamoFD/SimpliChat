@@ -5,6 +5,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from "../firebase";
 import { v4 as uuid } from 'uuid';
 import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import SendIcon from '@mui/icons-material/Send';
 
 function ChatBar() {
   const [text, setText] = useState("");
@@ -77,22 +79,53 @@ function ChatBar() {
     setImg(null)
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <>
-      <div className="w-full flex">
-        <input
-          placeholder="Type message here..."
-          name="message"
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
+      <div className="w-full items-center flex">
+      <input
+        placeholder='type message here...'
+        name='message'
+        type='text'
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className='m-5 w-2/3 rounded-md h-14 bg-gray-600 text-2xl pl-3 text-white focus:shadow-purple focus:outline-none focus:ring focus:ring-purple-600'
+    />
         <input
           type="file"
-          id="file"
+          id="fileInput"
           onChange={(e) => setImg(e.target.files[0])}
+          className='hidden'
         />
-        <button onClick={handleSend} disabled={!text && !img}>Submit</button>
+        <label
+          htmlFor='fileInput'
+          className='h-16 w-16 mr-6 bg-purple-600 rounded-xl flex items-center justify-center cursor-pointer'>
+        <AddPhotoAlternateIcon
+          sx={{
+            width: '30px',
+            height: '30px',
+          }}
+        />
+        </label>
+        <button
+          onClick={handleSend}
+          disabled={!text && !img}
+          className='bg-purple-600 h-16 w-16 rounded-xl text-2xl cursor-pointer'
+        >
+          <SendIcon
+            sx={{
+              width: '30px',
+              height: '30px',
+            }}
+          />
+        </button>
       </div>
     </>
   );

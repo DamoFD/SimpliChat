@@ -4,6 +4,7 @@ import { ChatContext } from "../context/ChatContext";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import Message from './Message';
+import ChatBoxHeader from './ChatBoxHeader';
 
 function ChatBox() {
   const [messages, setMessages] = useState([]);
@@ -23,13 +24,11 @@ function ChatBox() {
 
     useEffect(() => {
         bottomDiv.current?.scrollIntoView({ behavior: "smooth"});
-    })
+    }, [messages]);
 
   return (
     <div className="flex flex-col justify-end h-full">
-      <div className='w-full bg-gray-700 justify-self-start'>
-        <h2>{data.user?.displayName}</h2>
-      </div>
+      <ChatBoxHeader />
         <div className="flex flex-col w-full overflow-y-auto flex-grow">
             {messages.map(m=>(
               <Message message={m} key={m.id} />

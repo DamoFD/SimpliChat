@@ -41,6 +41,7 @@ function AddFriendModal({ open, handleClose }) {
   };
 
   const handleSubmit = async () => {
+    console.log('currentUser:', currentUser)
     if (!user) return;
 
     const combinedId =
@@ -57,7 +58,7 @@ function AddFriendModal({ open, handleClose }) {
             [`${combinedId}.userInfo`]: {
                 uid: user.uid,
                 displayName: user.displayName,
-                photoURL: user.photoURL || '',
+                photoURL: user.profilePic || '',
             },
             [`${combinedId}.date`]: serverTimestamp(),
         })

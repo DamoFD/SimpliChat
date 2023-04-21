@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import ChatIcon from "@mui/icons-material/Chat";
-import CircleIcon from "@mui/icons-material/Circle";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Avatar } from "@mui/material";
 import AddFriendModal from "./AddFriendModal";
@@ -69,7 +68,7 @@ function SideBar() {
             onClick={handleModalOpen}
             className="bg-gray-900 w-12 h-12 rounded-lg"
           >
-            <ChatIcon
+            <PersonAddIcon
               sx={{
                 width: "30px",
                 height: "30px",
@@ -89,19 +88,10 @@ function SideBar() {
             alt={chat[1].userInfo.displayName}
             className="ml-10"
           />
-          <div>
+          <div className='w-10/12'>
           <p className="ml-2 text-xl">{chat[1].userInfo.displayName}</p>
-          <p>{chat[1].lastMessage?.text}</p>
+          <p className='ml-2 break-words'>{chat[1].lastMessage ? chat[1].lastMessage.text.substring(0, 30)+'...' : ''}</p>
           </div>
-          <div className="flex-grow" />
-          <CircleIcon
-            className="justify-self-end mr-4"
-            sx={{
-              color: true ? "green" : "red",
-              height: "20px",
-              width: "20px",
-            }}
-          />
         </div>
         ))}
       </div>
